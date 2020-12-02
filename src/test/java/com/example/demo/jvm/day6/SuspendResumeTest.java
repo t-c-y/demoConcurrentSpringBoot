@@ -21,6 +21,42 @@ public class SuspendResumeTest {
      *
      */
 
+    public static Object obj = new Object();
 
+    public static class T1 extends Thread {
+
+        public T1(String name) {
+            super(name);
+        }
+
+        @Override
+        public void run() {
+            synchronized (obj) {
+                System.out.println("in " + this.getName());
+//                this.suspend();
+                Thread.currentThread().suspend();
+            }
+            System.out.println(this.getName() + " end");
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        T1 t1 = new T1("t1");
+        t1.start();
+        Thread.sleep(100);
+        T1 t2 = new T1("t2");
+        t2.start();
+        t1.resume();
+//        Thread.sleep(100);
+        // 发现t2线程在suspend0处被挂起了，
+        // t2的状态竟然还是RUNNABLE状态，
+        // 线程明明被挂起了，状态还是运行中容易导致我们队当前系统进行误判，
+        // 代码中已经调用resume()方法了，但是由于时间先后顺序的缘故，
+        // resume并没有生效，这导致了t2永远滴被挂起了，
+        // 并且永远占用了object的锁，这对于系统来说可能是致命的。
+        t2.resume();
+        t1.join();
+        t2.join();
+    }
 
 }
