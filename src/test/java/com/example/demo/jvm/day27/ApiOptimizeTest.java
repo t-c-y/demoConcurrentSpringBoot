@@ -122,10 +122,16 @@ public class ApiOptimizeTest {
         ApiOptimizeTest api = new ApiOptimizeTest();
         //创建ExecutorCompletionService对象
         ExecutorCompletionService<Map<String, Object>> executorCompletionService = new ExecutorCompletionService<>(es);
+        ExecutorCompletionService<Map<String, Object>> executorCompletionService1 = new ExecutorCompletionService<>(es);
         int count = 10;
         for(int i = 1; i <= count; i++) {
             //异步查询
             executorCompletionService.submit(api.getDetailsAsc(i, i + "", i));
+        }
+        int count1 = 20;
+        for(int i = 11; i <= count1; i++) {
+            //异步查询
+            executorCompletionService1.submit(api.getDetailsAsc(i, i + "", i));
         }
 
 
@@ -135,6 +141,16 @@ public class ApiOptimizeTest {
             try {
                 //可以获取到最先到的商品
                 Map<String, Object> infoMap = executorCompletionService.take().get();
+                result.put("info"+i, infoMap);
+            } catch (Exception e) {
+//                e.printStackTrace();
+                result.put("info"+i, null);
+            }
+        }
+        for (int i = 11; i < count1; i++) {
+            try {
+                //可以获取到最先到的商品
+                Map<String, Object> infoMap = executorCompletionService1.take().get();
                 result.put("info"+i, infoMap);
             } catch (Exception e) {
 //                e.printStackTrace();
