@@ -12,6 +12,24 @@ public class InheritableThreadLocalTest {
 
     /**
      *
+     * 父线程相当于主管，子线程相当于干活的小弟，主管让小弟们干活的时候，
+     * 将自己兜里面的东西复制一份给小弟们使用，主管兜里面可能有很多牛逼的工具，为了提升小弟们的工作效率，
+     * 给小弟们都复制一个，丢到小弟们的兜里，然后小弟就可以从自己的兜里拿去这些东西使用了，
+     * 也可以清空自己兜里面的东西。
+     *
+     * Thread对象中有个inheritableThreadLocals变量，代码如下：
+     * ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
+     * inheritableThreadLocals相当于线程中另外一种兜，这种兜有什么特征呢，当创建子线程的时候，
+     * 子线程会将父线程这种类型兜的东西全部复制一份放到自己的inheritableThreadLocals兜中，
+     * 使用InheritableThreadLocal对象可以操作线程中的inheritableThreadLocals兜。
+     *
+     * InheritableThreadLocal常用的方法也有3个：
+     * //向Thread中某个口袋中放东西
+     * public void set(T value);
+     * //获取这个口袋中目前放的东西
+     * public T get();
+     * //清空这个口袋中放的东西
+     * public void remove()
      *
      *
      */
@@ -73,6 +91,12 @@ public class InheritableThreadLocalTest {
         }
     }
 
+    /**
+     *
+     * 使用InheritableThreadLocal解决上面子线程中无法输出traceId的问题，
+     * 只需要将上一个示例代码中的ThreadLocal替换成InheritableThreadLocal即可
+     *
+     */
     public static void test() {
         List<String> dataList = new ArrayList<>();
         for(int i=0; i<3; i++) {
